@@ -14,7 +14,7 @@ import {
 } from "../../internal"
 
 export class ScalarNode implements INode {
-    readonly type: IType<any, any>
+    readonly type: IType<any, any, any>
     readonly storedValue: any
     @observable subpath: string = ""
 
@@ -25,7 +25,7 @@ export class ScalarNode implements INode {
     private state = NodeLifeCycle.INITIALIZING
 
     constructor(
-        type: IType<any, any>,
+        type: IType<any, any, any>,
         parent: ObjectNode | null,
         subpath: string,
         environment: any,

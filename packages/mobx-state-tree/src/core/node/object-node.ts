@@ -32,7 +32,7 @@ let nextNodeId = 1
 
 export class ObjectNode implements INode {
     nodeId = ++nextNodeId
-    readonly type: IType<any, any>
+    readonly type: IType<any, any, any>
     readonly storedValue: any
     @observable subpath: string = ""
     @observable protected _parent: ObjectNode | null = null
@@ -55,7 +55,7 @@ export class ObjectNode implements INode {
     applySnapshot: (snapshot: any) => void
 
     constructor(
-        type: IType<any, any>,
+        type: IType<any, any, any>,
         parent: ObjectNode | null,
         subpath: string,
         environment: any,
@@ -234,7 +234,7 @@ export class ObjectNode implements INode {
         }
     }
 
-    getChildType(key: string): IType<any, any> {
+    getChildType(key: string): IType<any, any, any> {
         return this.type.getChildType(key)
     }
 

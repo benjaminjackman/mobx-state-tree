@@ -44,10 +44,10 @@ export function arrayToString(this: IObservableArray<any> & IStateTreeNode) {
 
 export class ArrayType<S, T> extends ComplexType<S[], IObservableArray<T>> {
     shouldAttachNode = true
-    subType: IType<any, any>
+    subType: IType<any, any, any>
     readonly flags = TypeFlags.Array
 
-    constructor(name: string, subType: IType<any, any>) {
+    constructor(name: string, subType: IType<any, any, any>) {
         super(name)
         this.subType = subType
     }
@@ -196,7 +196,7 @@ export class ArrayType<S, T> extends ComplexType<S[], IObservableArray<T>> {
         target.replace(snapshot)
     }
 
-    getChildType(key: string): IType<any, any> {
+    getChildType(key: string): IType<any, any, any> {
         return this.subType
     }
 
@@ -322,7 +322,7 @@ function reconcileArrayChildren<T>(
 
 // convert a value to a node at given parent and subpath. attempts to reuse old node if possible and given
 function valueAsNode(
-    childType: IType<any, any>,
+    childType: IType<any, any, any>,
     parent: ObjectNode,
     subpath: string,
     newValue: any,

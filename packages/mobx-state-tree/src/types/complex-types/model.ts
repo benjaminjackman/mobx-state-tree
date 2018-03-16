@@ -59,7 +59,7 @@ function objectTypeToString(this: any) {
 
 export type ModelTypeConfig = {
     name?: string
-    properties?: { [K: string]: IType<any, any> }
+    properties?: { [K: string]: IType<any, any, any> }
     initializers?: ReadonlyArray<((instance: any) => any)>
     preProcessor?: (snapshot: any) => any
 }
@@ -124,7 +124,7 @@ export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelTy
      * The original object definition
      */
     public readonly initializers: ((instance: any) => any)[]
-    public readonly properties: { [K: string]: IType<any, any> } = {}
+    public readonly properties: { [K: string]: IType<any, any, any> } = {}
     private preProcessor: (snapshot: any) => any | undefined
 
     constructor(opts: ModelTypeConfig) {
@@ -142,7 +142,7 @@ export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelTy
         return Object.keys(this.properties)
     }
 
-    cloneAndEnhance(opts: ModelTypeConfig): ModelType<any, any> {
+    cloneAndEnhance(opts: ModelTypeConfig): ModelType<any, any, any> {
         return new ModelType({
             name: opts.name || this.name,
             properties: Object.assign({}, this.properties, opts.properties),
@@ -424,7 +424,7 @@ export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelTy
         return snapshot
     }
 
-    getChildType(key: string): IType<any, any> {
+    getChildType(key: string): IType<any, any, any> {
         return this.properties[key]
     }
 
@@ -445,7 +445,7 @@ export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelTy
         )
     }
 
-    private forAllProps(fn: (name: string, type: IType<any, any>) => void) {
+    private forAllProps(fn: (name: string, type: IType<any, any, any>) => void) {
         this.propertyNames.forEach(key => fn(key, this.properties[key]))
     }
 
@@ -468,7 +468,7 @@ export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelTy
 }
 
 export interface IModelType<C, S, T> extends IComplexType<C, S, T & IStateTreeNode> {
-    readonly properties: { readonly [K: string]: IType<any, any> } // for reflection purposes
+    readonly properties: { readonly [K: string]: IType<any, any, any> } // for reflection purposes
     named(newName: string): IModelType<S, T>
     props<SP, TP>(
         props: { [K in keyof TP]: IType<any, TP[K]> | TP[K] } &
@@ -535,7 +535,7 @@ export function compose<T1, S1, A1, T2, S2, A2, T3, S3, A3>(
  * @export
  * @alias types.compose
  */
-export function compose(...args: any[]): IModelType<any, any> {
+export function compose(...args: any[]): IModelType<any, any, any> {
     // TODO: just join the base type names if no name is provided
     const typeName: string = typeof args[0] === "string" ? args.shift() : "AnonymousModel"
     // check all parameters
@@ -544,7 +544,7 @@ export function compose(...args: any[]): IModelType<any, any> {
             if (!isType(type)) fail("expected a mobx-state-tree type, got " + type + " instead")
         })
     }
-    return (args as ModelType<any, any>[])
+    return (args as ModelType<any, any, any>[])
         .reduce((prev, cur) =>
             prev.cloneAndEnhance({
                 name: prev.name + "_" + cur.name,
@@ -555,6 +555,6 @@ export function compose(...args: any[]): IModelType<any, any> {
         .named(typeName)
 }
 
-export function isObjectType(type: any): type is ModelType<any, any> {
+export function isObjectType(type: any): type is ModelType<any, any, any> {
     return isType(type) && (type.flags & TypeFlags.Object) > 0
 }

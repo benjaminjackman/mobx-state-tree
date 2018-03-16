@@ -23,7 +23,7 @@ export function getType<C, S, T>(object: IStateTreeNode): IType<C, S, T> {
  * @export
  * @param {IStateTreeNode} object
  * @param {string} child
- * @returns {IType<any, any>}
+ * @returns {IType<any, any, any>}
  */
 export function getChildType(object: IStateTreeNode, child: string): IType<any, any, any> {
     return getStateTreeNode(object).getChildType(child)
@@ -428,7 +428,7 @@ export function resolvePath(target: IStateTreeNode, path: string): IStateTreeNod
  * Returns undefined if no value can be found.
  *
  * @export
- * @param {IType<any, any>} type
+ * @param {IType<any, any, any>} type
  * @param {IStateTreeNode} target
  * @param {(string | number)} identifier
  * @returns {*}
@@ -699,7 +699,7 @@ export function getMembers(target: IStateTreeNode): IModelReflectionData {
             )
     }
     const node: any = getStateTreeNode(target)
-    const type = node.type as ModelType<any, any>
+    const type = node.type as ModelType<any, any, any>
     const props = Object.getOwnPropertyNames(target)
     const reflected: IModelReflectionData = {
         name: type.name,

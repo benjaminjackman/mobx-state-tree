@@ -43,13 +43,13 @@ export interface IExtendedObservableMap<T> extends ObservableMap<string, T> {
     put(value: T | any): this // downtype to any, again, because we cannot type the snapshot, see
 }
 
-export function mapToString(this: ObservableMap<any, any>) {
+export function mapToString(this: ObservableMap<any, any, any>) {
     return `${getStateTreeNode(this as IStateTreeNode)}(${this.size} items)`
 }
 
 const needsIdentifierError = `Map.put can only be used to store complex values that have an identifier type attribute`
 
-function put(this: ObservableMap<any, any>, value: any) {
+function put(this: ObservableMap<any, any, any>, value: any) {
     if (!!!value) fail(`Map.put cannot be used to set empty values`)
     if (isStateTreeNode(value)) {
         const node = getStateTreeNode(value)
@@ -61,7 +61,7 @@ function put(this: ObservableMap<any, any>, value: any) {
     } else if (!isMutable(value)) {
         return fail(`Map.put can only be used to store complex values`)
     } else {
-        const mapType = getStateTreeNode(this as IStateTreeNode).type as MapType<any, any>
+        const mapType = getStateTreeNode(this as IStateTreeNode).type as MapType<any, any, any>
         if (mapType.identifierMode === MapIdentifierMode.NO) return fail(needsIdentifierError)
         if (mapType.identifierMode === MapIdentifierMode.YES) {
             this.set("" + value[mapType.identifierAttribute!], value)
@@ -120,7 +120,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
 
     finalizeNewInstance = (node: INode, snapshot: any) => {
         const objNode = node as ObjectNode
-        const instance = objNode.storedValue as ObservableMap<any, any>
+        const instance = objNode.storedValue as ObservableMap<any, any, any>
         _interceptReads(instance, objNode.unbox)
         intercept(instance, c => this.willChange(c))
         objNode.applySnapshot(snapshot)
@@ -129,7 +129,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
 
     getChildren(node: ObjectNode): ReadonlyArray<INode> {
         // return (node.storedValue as ObservableMap<any>).values()
-        return values(node.storedValue as ObservableMap<any, any>)
+        return values(node.storedValue as ObservableMap<any, any, any>)
     }
 
     getChildNode(node: ObjectNode, key: string): INode {
@@ -138,7 +138,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
         return childNode
     }
 
-    willChange(change: IMapWillChange<any, any>): IMapWillChange<any, any> | null {
+    willChange(change: IMapWillChange<any, any, any>): IMapWillChange<any, any, any> | null {
         const node = getStateTreeNode(change.object as IStateTreeNode)
         const key = "" + change.name
         node.assertWritable()
@@ -213,7 +213,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
         return res
     }
 
-    didChange(change: IMapDidChange<any, any>): void {
+    didChange(change: IMapDidChange<any, any, any>): void {
         const node = getStateTreeNode(change.object as IStateTreeNode)
         switch (change.type) {
             case "update":
@@ -249,7 +249,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
     }
 
     applyPatchLocally(node: ObjectNode, subpath: string, patch: IJsonPatch): void {
-        const target = node.storedValue as ObservableMap<any, any>
+        const target = node.storedValue as ObservableMap<any, any, any>
         switch (patch.op) {
             case "add":
             case "replace":
@@ -264,7 +264,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
     @action
     applySnapshot(node: ObjectNode, snapshot: any): void {
         typecheck(this, snapshot)
-        const target = node.storedValue as ObservableMap<any, any>
+        const target = node.storedValue as ObservableMap<any, any, any>
         const currentKeys: { [key: string]: boolean } = {}
         Array.from(target.keys()).forEach(key => {
             currentKeys[key] = false
@@ -279,7 +279,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
         })
     }
 
-    getChildType(key: string): IType<any, any> {
+    getChildType(key: string): IType<any, any, any> {
         return this.subType
     }
 
@@ -300,7 +300,7 @@ export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtende
     }
 
     removeChild(node: ObjectNode, subpath: string) {
-        ;(node.storedValue as ObservableMap<any, any>).delete(subpath)
+        ;(node.storedValue as ObservableMap<any, any, any>).delete(subpath)
     }
 }
 

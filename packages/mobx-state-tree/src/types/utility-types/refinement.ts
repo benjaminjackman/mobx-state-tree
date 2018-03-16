@@ -14,7 +14,7 @@ import {
 } from "../../internal"
 
 export class Refinement<S, T> extends Type<S, T> {
-    readonly type: IType<any, any>
+    readonly type: IType<any, any, any>
     readonly predicate: (v: any) => boolean
     readonly message: (v: any) => string
 
@@ -28,7 +28,7 @@ export class Refinement<S, T> extends Type<S, T> {
 
     constructor(
         name: string,
-        type: IType<any, any>,
+        type: IType<any, any, any>,
         predicate: (v: any) => boolean,
         message: (v: any) => string
     ) {
@@ -49,7 +49,7 @@ export class Refinement<S, T> extends Type<S, T> {
         return inst
     }
 
-    isAssignableFrom(type: IType<any, any>) {
+    isAssignableFrom(type: IType<any, any, any>) {
         return this.type.isAssignableFrom(type)
     }
 
@@ -100,7 +100,7 @@ export function refinement<T>(
  * @param {(snapshot: T) => boolean} predicate
  * @returns {IType<T, T>}
  */
-export function refinement(...args: any[]): IType<any, any> {
+export function refinement(...args: any[]): IType<any, any, any> {
     const name = typeof args[0] === "string" ? args.shift() : isType(args[0]) ? args[0].name : null
     const type = args[0]
     const predicate = args[1]
@@ -125,6 +125,6 @@ export function refinement(...args: any[]): IType<any, any> {
     return new Refinement(name, type, predicate, message)
 }
 
-export function isRefinementType(type: any): type is Refinement<any, any> {
+export function isRefinementType(type: any): type is Refinement<any, any, any> {
     return (type.flags & TypeFlags.Refinement) > 0
 }

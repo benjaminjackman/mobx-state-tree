@@ -12,11 +12,11 @@ import {
     fail
 } from "../../internal"
 
-export type ITypeDispatcher = (snapshot: any) => IType<any, any>
+export type ITypeDispatcher = (snapshot: any) => IType<any, any, any>
 
-export class Union extends Type<any, any> {
+export class Union extends Type<any, any, any> {
     readonly dispatcher: ITypeDispatcher | null = null
-    readonly types: IType<any, any>[]
+    readonly types: IType<any, any, any>[]
 
     get flags() {
         let result: TypeFlags = TypeFlags.Union
@@ -32,13 +32,13 @@ export class Union extends Type<any, any> {
         return this.types.some(type => type.shouldAttachNode)
     }
 
-    constructor(name: string, types: IType<any, any>[], dispatcher: ITypeDispatcher | null) {
+    constructor(name: string, types: IType<any, any, any>[], dispatcher: ITypeDispatcher | null) {
         super(name)
         this.dispatcher = dispatcher
         this.types = types
     }
 
-    isAssignableFrom(type: IType<any, any>) {
+    isAssignableFrom(type: IType<any, any, any>) {
         return this.types.some(subType => subType.isAssignableFrom(type))
     }
 
@@ -54,7 +54,7 @@ export class Union extends Type<any, any> {
         return this.determineType(newValue).reconcile(current, newValue)
     }
 
-    determineType(value: any): IType<any, any> {
+    determineType(value: any): IType<any, any, any> {
         // try the dispatcher, if defined
         if (this.dispatcher !== null) {
             return this.dispatcher(value)
@@ -302,25 +302,25 @@ export function union<
     TA | TB | TC | TD | TE | TF | TG | TH | TI | TJ
 >
 
-export function union(...types: IType<any, any>[]): IType<any, any>
+export function union(...types: IType<any, any, any>[]): IType<any, any, any>
 export function union(
-    dispatchOrType: ITypeDispatcher | IType<any, any>,
-    ...otherTypes: IType<any, any>[]
-): IType<any, any>
+    dispatchOrType: ITypeDispatcher | IType<any, any, any>,
+    ...otherTypes: IType<any, any, any>[]
+): IType<any, any, any>
 
 /**
  * types.union(dispatcher?, types...) create a union of multiple types. If the correct type cannot be inferred unambiguously from a snapshot, provide a dispatcher function of the form (snapshot) => Type.
  *
  * @export
  * @alias types.union
- * @param {(ITypeDispatcher | IType<any, any>)} dispatchOrType
- * @param {...IType<any, any>[]} otherTypes
- * @returns {IType<any, any>}
+ * @param {(ITypeDispatcher | IType<any, any, any>)} dispatchOrType
+ * @param {...IType<any, any, any>[]} otherTypes
+ * @returns {IType<any, any, any>}
  */
 export function union(
-    dispatchOrType: ITypeDispatcher | IType<any, any>,
-    ...otherTypes: IType<any, any>[]
-): IType<any, any> {
+    dispatchOrType: ITypeDispatcher | IType<any, any, any>,
+    ...otherTypes: IType<any, any, any>[]
+): IType<any, any, any> {
     const dispatcher = isType(dispatchOrType) ? null : dispatchOrType
     const types = isType(dispatchOrType) ? otherTypes.concat(dispatchOrType) : otherTypes
     const name = "(" + types.map(type => type.name).join(" | ") + ")"

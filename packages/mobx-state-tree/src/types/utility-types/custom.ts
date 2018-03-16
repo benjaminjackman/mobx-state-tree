@@ -11,7 +11,7 @@ import {
     ObjectNode
 } from "../../internal"
 
-export type CustomTypeOptions<S, T> = {
+export type CustomTypeOptions<C, S, T> = {
     // Friendly name
     name: string
     // given a serialized value, how to turn it into the target type
@@ -32,7 +32,7 @@ export type CustomTypeOptions<S, T> = {
  * The signature of the options is:
  *
  * ```javascript
- * export type CustomTypeOptions<S, T> = {
+ * export type CustomTypeOptions<C, S, T> = {
  *     // Friendly name
  *     name: string
  *     // given a serialized value, how to turn it into the target type
@@ -71,15 +71,15 @@ export type CustomTypeOptions<S, T> = {
  *     balance: DecimalPrimitive
  * })
  */
-export function custom<S, T>(options: CustomTypeOptions<S, T>): IType<S, T> {
+export function custom<C, S, T>(options: CustomTypeOptions<C, S, T>): IType<C, S, T> {
     return new CustomType(options)
 }
 
-export class CustomType<S, T> extends Type<S, T> {
+export class CustomType<C, S, T> extends Type<C, S, T> {
     readonly flags = TypeFlags.Reference
     readonly shouldAttachNode = false
 
-    constructor(protected readonly options: CustomTypeOptions<S, T>) {
+    constructor(protected readonly options: CustomTypeOptions<C, S, T>) {
         super(options.name)
     }
 
@@ -87,7 +87,7 @@ export class CustomType<S, T> extends Type<S, T> {
         return this.name
     }
 
-    isAssignableFrom(type: IType<any, any>): boolean {
+    isAssignableFrom(type: IType<any, any, any>): boolean {
         return type === this
     }
 

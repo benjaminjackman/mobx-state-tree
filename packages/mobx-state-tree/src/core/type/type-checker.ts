@@ -10,7 +10,7 @@ import {
 
 export interface IContextEntry {
     path: string
-    type?: IType<any, any>
+    type?: IType<any, any, any>
 }
 
 export type IContext = IContextEntry[]
@@ -45,7 +45,7 @@ function shortenPrintValue(valueInString: string) {
 
 function toErrorString(error: IValidationError): string {
     const { value } = error
-    const type: IType<any, any> = error.context[error.context.length - 1].type as any
+    const type: IType<any, any, any> = error.context[error.context.length - 1].type as any
     const fullPath = error.context
         .map(({ path }) => path)
         .filter(path => path.length > 0)
@@ -75,14 +75,14 @@ function toErrorString(error: IValidationError): string {
     )
 }
 
-export function getDefaultContext(type: IType<any, any>): IContext {
+export function getDefaultContext(type: IType<any, any, any>): IContext {
     return [{ type, path: "" }]
 }
 
 export function getContextForPath(
     context: IContext,
     path: string,
-    type?: IType<any, any>
+    type?: IType<any, any, any>
 ): IContext {
     return context.concat([{ path, type }])
 }
@@ -104,7 +104,7 @@ export function flattenTypeErrors(errors: IValidationResult[]): IValidationResul
 }
 
 // TODO; doublecheck: typecheck should only needed to be invoked from: type.create and array / map / value.property will change
-export function typecheck(type: IType<any, any>, value: any): void {
+export function typecheck(type: IType<any, any, any>, value: any): void {
     // if not in dev-mode, do not even try to run typecheck. Everything is developer fault!
     if (process.env.NODE_ENV === "production") return
     typecheckPublic(type, value)
@@ -117,10 +117,10 @@ export function typecheck(type: IType<any, any>, value: any): void {
  *
  * @alias typecheck
  * @export
- * @param {IType<any, any>} type
+ * @param {IType<any, any, any>} type
  * @param {*} value
  */
-export function typecheckPublic(type: IType<any, any>, value: any): void {
+export function typecheckPublic(type: IType<any, any, any>, value: any): void {
     const errors = type.validate(value, [{ path: "", type }])
 
     if (errors.length > 0) {
