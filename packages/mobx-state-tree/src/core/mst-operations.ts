@@ -7,7 +7,7 @@ import { IObservableArray, ObservableMap, isComputedProp, isObservableProp } fro
  * @param {IStateTreeNode} object
  * @returns {IType<S, T>}
  */
-export function getType<S, T>(object: IStateTreeNode): IType<S, T> {
+export function getType<C, S, T>(object: IStateTreeNode): IType<C, S, T> {
     return getStateTreeNode(object).type
 }
 
@@ -25,7 +25,7 @@ export function getType<S, T>(object: IStateTreeNode): IType<S, T> {
  * @param {string} child
  * @returns {IType<any, any>}
  */
-export function getChildType(object: IStateTreeNode, child: string): IType<any, any> {
+export function getChildType(object: IStateTreeNode, child: string): IType<any, any, any> {
     return getStateTreeNode(object).getChildType(child)
 }
 
@@ -434,7 +434,7 @@ export function resolvePath(target: IStateTreeNode, path: string): IStateTreeNod
  * @returns {*}
  */
 export function resolveIdentifier(
-    type: IType<any, any>,
+    type: IType<any, any, any>,
     target: IStateTreeNode,
     identifier: string | number
 ): any {
@@ -675,7 +675,7 @@ export function walk(target: IStateTreeNode, processor: (item: IStateTreeNode) =
 
 export interface IModelReflectionData {
     name: string
-    properties: { [K: string]: IType<any, any> }
+    properties: { [K: string]: IType<any, any, any> }
     actions: string[]
     views: string[]
     volatile: string[]

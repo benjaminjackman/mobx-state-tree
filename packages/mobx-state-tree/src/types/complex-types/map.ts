@@ -82,14 +82,14 @@ export enum MapIdentifierMode {
     NO
 }
 
-export class MapType<S, T> extends ComplexType<{ [key: string]: S }, IExtendedObservableMap<T>> {
+export class MapType<C, S, T> extends ComplexType<{ [key: string]: S }, IExtendedObservableMap<T>> {
     shouldAttachNode = true
-    subType: IType<any, any>
+    subType: IType<any, any, any>
     identifierMode: MapIdentifierMode = MapIdentifierMode.UNKNOWN
     identifierAttribute: string | undefined = undefined
     readonly flags = TypeFlags.Map
 
-    constructor(name: string, subType: IType<any, any>) {
+    constructor(name: string, subType: IType<any, any, any>) {
         super(name)
         this.subType = subType
     }

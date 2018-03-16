@@ -116,7 +116,7 @@ function toPropertiesObject<T>(properties: IModelProperties<T>): { [K in keyof T
     )
 }
 
-export class ModelType<S, T> extends ComplexType<S, T> implements IModelType<S, T> {
+export class ModelType<C, S, T> extends ComplexType<C, S, T> implements IModelType<C, S, T> {
     readonly flags = TypeFlags.Object
     shouldAttachNode = true
 
@@ -467,7 +467,7 @@ export class ModelType<S, T> extends ComplexType<S, T> implements IModelType<S, 
     }
 }
 
-export interface IModelType<S, T> extends IComplexType<S, T & IStateTreeNode> {
+export interface IModelType<C, S, T> extends IComplexType<C, S, T & IStateTreeNode> {
     readonly properties: { readonly [K: string]: IType<any, any> } // for reflection purposes
     named(newName: string): IModelType<S, T>
     props<SP, TP>(
